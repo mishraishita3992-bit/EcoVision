@@ -2,3 +2,7 @@ venv/
 __pycache__/
 *.pyc
 dataset/
+models/plastic_classifier.keras
+models/plastic_classifier_backup.keras
+models/plastic_classifier_v2.keras
+models/plastic_classifier_v2.tflite
