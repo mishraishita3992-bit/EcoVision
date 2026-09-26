@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    ```
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EcoVision - Plastic Classifier</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #eaf7ef, #f7fbf8);
+            color: #24352c;
+        }
+
+
+        /* =========================
+       HEADER
+    ========================= */
+
+        header {
+            width: 100%;
+            padding: 20px 8%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #dcebe1;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            color: #198754;
+        }
+
+        .logo span {
+            margin-right: 7px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #506057;
+            margin-left: 25px;
+            font-size: 15px;
+        }
+
+        nav a:hover {
+            color: #198754;
+        }
+
+
+        /* =========================
+       HERO
+    ========================= */
+
+        .hero {
+            text-align: center;
+            padding: 55px 20px 30px;
+        }
+
+        .hero h1 {
+            font-size: 45px;
+            color: #163d2b;
+            margin-bottom: 15px;
+        }
+
+        .hero h1 span {
+            color: #198754;
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: auto;
+            color: #66756c;
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+
+        /* =========================
+       MAIN CONTAINER
+    ========================= */
+
+        .container {
+            width: 92%;
+            max-width: 850px;
+            margin: 25px auto 60px;
+            background: white;
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: 0 15px 45px rgba(35, 80, 50, 0.10);
+        }
+
+
+        /* =========================
+       UPLOAD BOX
+    ========================= */
+
+        .upload-box {
+            border: 2px dashed #a8d5b8;
+            background: #f8fcf9;
+            border-radius: 18px;
+            padding: 45px 20px;
+            text-align: center;
+        }
+
+        .upload-icon {
+            font-size: 55px;
+            margin-bottom: 15px;
+        }
+
+        .upload-box h2 {
+            color: #254936;
+            margin-bottom: 10px;
+        }
+
+        .upload-box p {
+            color: #7b8880;
+            margin-bottom: 22px;
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+        .choose-button {
+            display: inline-block;
+            background: #198754;
+            color: white;
+            padding: 13px 28px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .choose-button:hover {
+            background: #146c43;
+            transform: translateY(-1px);
+        }
+
+        .upload-box.dragover {
+            border-color: #198754;
+            background: #e8f7ed;
+            transform: scale(1.01);
+        }
+
+        /* =========================
+       PREVIEW
+    ========================= */
+
+        #preview-section {
+            display: none;
+            text-align: center;
+            margin-top: 28px;
+        }
+
+        #preview {
+            width: auto;
+            max-width: 100%;
+            max-height: 350px;
+            border-radius: 18px;
+            object-fit: contain;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        #fileName {
+            margin-top: 12px;
+            color: #68756d;
+            font-size: 14px;
+        }
+
+        .clear-button {
+            margin-top: 12px;
+            padding: 9px 18px;
+            border: 1px solid #d9e5dd;
+            border-radius: 8px;
+            background: white;
+            color: #68756d;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .clear-button:hover {
+            background: #fff1f1;
+            color: #c62828;
+            border-color: #f0b8b8;
+        }
+
+
+        /* =========================
+       CLASSIFY BUTTON
+    ========================= */
+
+        .classify-button {
+            display: block;
+            width: 100%;
+            margin-top: 28px;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: #198754;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .classify-button:hover {
+            background: #146c43;
+            transform: translateY(-1px);
+        }
+
+        .classify-button:disabled {
+            background: #9caea3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+
+        /* =========================
+       LOADING
+    ========================= */
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 18px;
+            color: #198754;
+            font-weight: bold;
+        }
+
+
+        /* =========================
+       RESULT CARD
+    ========================= */
+
+        #result {
+            display: none;
+            margin-top: 35px;
+            background: linear-gradient(145deg, #f1faf4, #ffffff);
+            border: 1px solid #d8ebdf;
+            border-radius: 22px;
+            padding: 28px;
+        }
+
+        .result-heading {
+            text-align: center;
+            color: #355244;
+            margin-bottom: 22px;
+            font-size: 20px;
+        }
+
+        .prediction-card {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(40, 80, 50, 0.07);
+        }
+
+        .small-label {
+            color: #829087;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .plastic-type {
+            font-size: 42px;
+            font-weight: bold;
+            color: #198754;
+            margin-bottom: 8px;
+        }
+
+        .confidence {
+            color: #526259;
+            font-size: 17px;
+        }
+
+        .leaf {
+            font-size: 25px;
+            margin-top: 10px;
+        }
+
+
+        /* =========================
+       SCORE SECTION
+    ========================= */
+
+        .scores {
+            margin-top: 25px;
+        }
+
+        .scores h3 {
+            color: #3b5145;
+            margin-bottom: 18px;
+        }
+
+        .score-row {
+            margin-bottom: 15px;
+        }
+
+        .score-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .bar-background {
+            width: 100%;
+            height: 10px;
+            background: #e1ebe4;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bar {
+            width: 0%;
+            height: 100%;
+            background: #198754;
+            border-radius: 20px;
+            transition: width 0.7s ease;
+        }
+
+
+        /* =========================
+       RECYCLING CARD
+    ========================= */
+
+        .recycling-card {
+            margin-top: 25px;
+            background: #e8f6ec;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .recycling-card h3 {
+            color: #176b40;
+            margin-bottom: 9px;
+        }
+
+        .recycling-card p {
+            color: #506058;
+            line-height: 1.55;
+            font-size: 14px;
+        }
+
+
+        /* =========================
+       WARNING
+    ========================= */
+
+        .warning {
+            margin-top: 18px;
+            padding: 13px;
+            border-radius: 10px;
+            background: #fff8e6;
+            color: #80651d;
+            font-size: 13px;
+            text-align: center;
+        }
+
+
+        /* =========================
+       ERROR
+    ========================= */
+
+        #error {
+            display: none;
+            margin-top: 20px;
+            padding: 14px;
+            border-radius: 10px;
+            background: #fff0f0;
+            color: #c62828;
+            text-align: center;
+        }
+
+
+        /* =========================
+       FOOTER
+    ========================= */
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #77847b;
+            font-size: 13px;
+        }
+
+
+        /* =========================
+       MOBILE
+    ========================= */
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 18px 5%;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .hero {
+                padding-top: 35px;
+            }
+
+            .hero h1 {
+                font-size: 34px;
+            }
+
+            .container {
+                width: 94%;
+                padding: 20px;
+            }
+
+            .upload-box {
+                padding: 35px 15px;
+            }
+
+            .plastic-type {
+                font-size: 34px;
+            }
+
+        }
+    </style>
+    ```
+
+</head>
+
+<body>
+
+    <!-- =========================
+     HEADER
+========================= -->
+
+    <header>
+
+        ```
+        <div class="logo">
+            <span>♻️</span>
+            EcoVision
+        </div>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="#classifier">Classifier</a>
+            <a href="#about">About</a>
+        </nav>
+        ```
+
+    </header>
+
+    <!-- =========================
+     HERO
+========================= -->
+
+    <section class="hero">
+
+        ```
+        <h1>
+            Smart Plastic
+            <span>Identification</span>
+        </h1>
+
+        <p>
+            Upload a plastic waste image and let EcoVision's
+            AI model estimate the plastic type.
+        </p>
+        ```
+
+    </section>
+
+    <!-- =========================
+     CLASSIFIER
+========================= -->
+
+    <div class="container" id="classifier">
+
+        ```
+        <!-- UPLOAD -->
+
+        <div class="upload-box" id="uploadBox">
+            <div class="upload-icon">
+                📷
+            </div>
+
+            <h2>
+                Upload Your Plastic Image
+            </h2>
+
+            <p>
+                Choose an image or drag & drop it here
+            </p>
+
+
+            <button type="button" class="choose-button" onclick="document.getElementById('imageInput').click()">
+                📁 Choose File
+            </button>
+
+
+            <input type="file" id="imageInput" accept="image/*">
+
+        </div>
+
+
+        <!-- IMAGE PREVIEW -->
+
+        <div id="preview-section">
+
+            <img id="preview" alt="Selected plastic image">
+
+            <div id="fileName"></div>
+
+            <button type="button" class="clear-button" onclick="clearImage()">
+                🗑️ Clear Image
+            </button>
+
+        </div>
+
+
+        <!-- CLASSIFY -->
+
+        <button type="button" class="classify-button" id="classifyButton" onclick="classifyImage()">
+            🔍 Classify Image
+        </button>
+
+
+        <!-- LOADING -->
+
+        <div id="loading">
+            🌱 EcoVision is analyzing your image...
+        </div>
+
+
+        <!-- RESULT -->
+
+        <div id="result">
+
+            <h2 class="result-heading">
+                ✨ Your EcoVision Result
+            </h2>
+
+
+            <!-- MAIN PREDICTION -->
+
+            <div class="prediction-card">
+
+                <div class="small-label">
+                    We think this plastic is
+                </div>
+
+                <div class="plastic-type" id="plasticType">
+                    -
+                </div>
+
+                <div class="confidence" id="confidence">
+                    Confidence: -
+                </div>
+
+                <div class="leaf">
+                    🌱 ♻️ 🌱
+                </div>
+
+            </div>
+
+
+            <!-- SCORES -->
+
+            <div class="scores">
+
+                <h3>
+                    📊 Confidence Breakdown
+                </h3>
+
+
+                <!-- PET -->
+
+                <div class="score-row">
+
+                    <div class="score-header">
+
+                        <span>PET</span>
+
+                        <span id="petScore">
+                            0%
+                        </span>
+
+                    </div>
+
+                    <div class="bar-background">
+
+                        <div class="bar" id="petBar"></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- HDPE -->
+
+                <div class="score-row">
+
+                    <div class="score-header">
+
+                        <span>HDPE</span>
+
+                        <span id="hdpeScore">
+                            0%
+                        </span>
+
+                    </div>
+
+                    <div class="bar-background">
+
+                        <div class="bar" id="hdpeBar"></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LDPE -->
+
+                <div class="score-row">
+
+                    <div class="score-header">
+
+                        <span>LDPE</span>
+
+                        <span id="ldpeScore">
+                            0%
+                        </span>
+
+                    </div>
+
+                    <div class="bar-background">
+
+                        <div class="bar" id="ldpeBar"></div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PP -->
+
+                <div class="score-row">
+
+                    <div class="score-header">
+
+                        <span>PP</span>
+
+                        <span id="ppScore">
+                            0%
+                        </span>
+
+                    </div>
+
+                    <div class="bar-background">
+
+                        <div class="bar" id="ppBar"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RECYCLING INFORMATION -->
+
+            <div class="recycling-card">
+
+                <h3>
+                    ♻️ Recycling Information
+                </h3>
+
+                <p id="recyclingText">
+                    Recycling information will appear here.
+                </p>
+
+            </div>
+
+
+            <!-- WARNING -->
+
+            <div class="warning">
+
+                ⚠️ AI predictions are experimental.
+                Please verify the material before recycling.
+
+            </div>
+
+        </div>
+
+
+        <!-- ERROR -->
+
+        <div id="error"></div>
+        ```
+
+    </div>
+
+    <!-- =========================
+     ABOUT
+========================= -->
+
+    <section id="about" class="hero">
+
+        ```
+        <h2>
+            🌍 About EcoVision
+        </h2>
+
+        <p>
+            EcoVision is an experimental computer-vision project
+            that uses machine learning to estimate common plastic
+            resin types from images.
+        </p>
+        ```
+
+    </section>
+
+    <!-- =========================
+     FOOTER
+========================= -->
+
+    <footer>
+
+        ```
+        ♻️ EcoVision · AI for a cleaner future
+        ```
+
+    </footer>
+
+    <script>
+
+
+        // ==========================================
+        // GET HTML ELEMENTS
+        // ==========================================
+
+        const imageInput =
+            document.getElementById("imageInput");
+
+        const preview =
+            document.getElementById("preview");
+
+        const previewSection =
+            document.getElementById("preview-section");
+
+        const fileName =
+            document.getElementById("fileName");
+
+        const result =
+            document.getElementById("result");
+
+        const errorBox =
+            document.getElementById("error");
+
+        const loading =
+            document.getElementById("loading");
+
+        const classifyButton =
+            document.getElementById("classifyButton");
+
+
+        // ==========================================
+        // IMAGE SELECTION
+        // ==========================================
+
+        imageInput.addEventListener(
+            "change",
+            function () {
+
+                const file = imageInput.files[0];
+
+                handleImage(file);
+
+            }
+        );
+
+
+        // ==========================================
+        // HANDLE IMAGE
+        // ==========================================
+
+        function handleImage(file) {
+
+            if (!file) {
+                return;
+            }
+
+
+            // Check whether selected file is an image
+
+            if (!file.type.startsWith("image/")) {
+
+                errorBox.textContent =
+                    "Please select an image file.";
+
+                errorBox.style.display =
+                    "block";
+
+                return;
+            }
+
+
+            // Create preview
+
+            const imageURL =
+                URL.createObjectURL(file);
+
+            preview.src =
+                imageURL;
+
+
+            // Show preview
+
+            previewSection.style.display =
+                "block";
+
+
+            // Show filename
+
+            fileName.textContent =
+                "Selected: " + file.name;
+
+
+            // Hide previous result
+
+            result.style.display =
+                "none";
+
+
+            // Clear error
+
+            errorBox.style.display =
+                "none";
+
+            errorBox.textContent = "";
+
+        }
+
+
+        // ==========================================
+        // DRAG & DROP
+        // ==========================================
+
+        const uploadBox =
+            document.getElementById("uploadBox");
+
+
+        uploadBox.addEventListener(
+            "dragover",
+            function (event) {
+
+                event.preventDefault();
+
+                uploadBox.classList.add("dragover");
+
+            }
+        );
+
+
+        uploadBox.addEventListener(
+            "dragleave",
+            function () {
+
+                uploadBox.classList.remove("dragover");
+
+            }
+        );
+
+
+        uploadBox.addEventListener(
+            "drop",
+            function (event) {
+
+                event.preventDefault();
+
+                uploadBox.classList.remove("dragover");
+
+
+                const file =
+                    event.dataTransfer.files[0];
+
+
+                if (!file) {
+                    return;
+                }
+
+
+                // Put dropped file into file input
+
+                const dataTransfer =
+                    new DataTransfer();
+
+                dataTransfer.items.add(file);
+
+                imageInput.files =
+                    dataTransfer.files;
+
+
+                // Show image
+
+                handleImage(file);
+
+            }
+        );
+
+
+        // ==========================================
+        // CLEAR IMAGE
+        // ==========================================
+
+        function clearImage() {
+
+            // Clear file input
+
+            imageInput.value = "";
+
+
+            // Remove preview
+
+            preview.src = "";
+
+
+            // Hide preview section
+
+            previewSection.style.display =
+                "none";
+
+
+            // Clear filename
+
+            fileName.textContent = "";
+
+
+            // Hide result
+
+            result.style.display =
+                "none";
+
+
+            // Clear error
+
+            errorBox.textContent = "";
+
+            errorBox.style.display =
+                "none";
+
+        }
+
+
+        // ==========================================
+        // CLASSIFY IMAGE
+        // ==========================================
+
+        async function classifyImage() {
+
+
+            const file =
+                imageInput.files[0];
+
+
+            // Check image
+
+            if (!file) {
+
+                errorBox.textContent =
+                    "Please choose an image first.";
+
+                errorBox.style.display =
+                    "block";
+
+                return;
+            }
+
+
+            // Create form data
+
+            const formData =
+                new FormData();
+
+            formData.append(
+                "image",
+                file
+            );
+
+
+            // Loading state
+
+            classifyButton.disabled =
+                true;
+
+            classifyButton.textContent =
+                "🔄 Classifying...";
+
+            loading.style.display =
+                "block";
+
+            result.style.display =
+                "none";
+
+            errorBox.style.display =
+                "none";
+
+
+            try {
+
+
+                // Send image to Flask
+
+                const response =
+                    await fetch(
+                        "/predict",
+                        {
+                            method: "POST",
+                            body: formData
+                        }
+                    );
+
+
+                // Check response
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Server error: " +
+                        response.status
+                    );
+
+                }
+
+
+                // Convert response to JSON
+
+                const data =
+                    await response.json();
+
+
+                console.log(
+                    "Prediction:",
+                    data
+                );
+
+
+                // Flask error
+
+                if (data.error) {
+
+                    throw new Error(
+                        data.error
+                    );
+
+                }
+
+
+                // ==================================
+                // SHOW MAIN PREDICTION
+                // ==================================
+
+                document.getElementById(
+                    "plasticType"
+                ).textContent =
+                    data.predicted_class;
+
+
+                document.getElementById(
+                    "confidence"
+                ).textContent =
+                    "Confidence: " +
+                    data.confidence +
+                    "%";
+
+
+                // ==================================
+                // SHOW SCORE BARS
+                // ==================================
+
+                updateScore(
+                    data.all_scores.PET,
+                    "petScore",
+                    "petBar"
+                );
+
+
+                updateScore(
+                    data.all_scores.HDPE,
+                    "hdpeScore",
+                    "hdpeBar"
+                );
+
+
+                updateScore(
+                    data.all_scores.LDPE,
+                    "ldpeScore",
+                    "ldpeBar"
+                );
+
+
+                updateScore(
+                    data.all_scores.PP,
+                    "ppScore",
+                    "ppBar"
+                );
+
+
+                // ==================================
+                // RECYCLING INFORMATION
+                // ==================================
+
+                const recyclingInfo = {
+
+                    PET:
+                        "PET is commonly used for beverage bottles and food containers. It is widely recyclable where suitable collection facilities are available.",
+
+                    HDPE:
+                        "HDPE is commonly used for bottles, containers and packaging. It is widely recyclable through many recycling programs.",
+
+                    LDPE:
+                        "LDPE is commonly used for plastic bags and flexible packaging. Recycling availability varies by location.",
+
+                    PP:
+                        "PP is commonly used for food containers, bottle caps and packaging. Recycling availability varies by location."
+
+                };
+
+
+                document.getElementById(
+                    "recyclingText"
+                ).textContent =
+                    recyclingInfo[
+                    data.predicted_class
+                    ] ||
+                    "Check your local recycling guidelines for appropriate disposal information.";
+
+
+                // Show result
+
+                result.style.display =
+                    "block";
+
+
+                // Scroll to result
+
+                result.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+
+            }
+
+            catch (error) {
+
+
+                console.error(
+                    "Classification error:",
+                    error
+                );
+
+
+                errorBox.textContent =
+                    "❌ " + error.message;
+
+
+                errorBox.style.display =
+                    "block";
+
+            }
+
+
+            // Stop loading
+
+            loading.style.display =
+                "none";
+
+
+            // Enable button
+
+            classifyButton.disabled =
+                false;
+
+            classifyButton.textContent =
+                "🔍 Classify Image";
+
+        }
+
+
+        // ==========================================
+        // UPDATE SCORE
+        // ==========================================
+
+        function updateScore(
+            score,
+            scoreId,
+            barId
+        ) {
+
+            const value =
+                Number(score) || 0;
+
+
+            document.getElementById(
+                scoreId
+            ).textContent =
+                value.toFixed(2) + "%";
+
+
+            document.getElementById(
+                barId
+            ).style.width =
+                value + "%";
+
+        }
+
+    </script>
+
+</body>
+
+</html>
